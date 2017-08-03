@@ -108,6 +108,18 @@ internal class MPVView(context: Context, attrs: AttributeSet) : SurfaceView(cont
             MPVLib.setOptionString("vd-lavc-skiploopfilter", "nonkey")
         }
 
+        var ytdl_format = sharedPreferences.getString("video_ytdl_format", "")
+        if (ytdl_format == "") {
+            // prefer H.264 smaller or equal to 720p, fallback to what's available
+            // also prefer separate V+A (mainly yt) over single files
+            ytdl_format = "(bestvideo[vcodec^=?avc]/bestvideo[vcodec^=?mp4])[height<=?720]+bestaudio/" +
+                "([vcodec^=?avc]/[vcodec^=?mp4])[height<=?720]/bestvideo+bestaudio/best"
+        }
+        MPVLib.setOptionString("ytdl", "yes")
+        MPVLib.setOptionString("ytdl-format", ytdl_format)
+
+        // set options
+
         MPVLib.setOptionString("vo", "gpu")
         MPVLib.setOptionString("gpu-context", "android")
         MPVLib.setOptionString("hwdec", hwdec)
@@ -116,7 +128,6 @@ internal class MPVView(context: Context, attrs: AttributeSet) : SurfaceView(cont
         MPVLib.setOptionString("tls-verify", "yes")
         MPVLib.setOptionString("tls-ca-file", "${this.context.filesDir.path}/cacert.pem")
         MPVLib.setOptionString("input-default-bindings", "yes")
-        MPVLib.setOptionString("ytdl", "yes")
         // Limit demuxer cache to 32 MiB, the default is too high for mobile devices
         MPVLib.setOptionString("demuxer-max-bytes", "${32 * 1024 * 1024}")
         MPVLib.setOptionString("demuxer-max-back-bytes", "${32 * 1024 * 1024}")
