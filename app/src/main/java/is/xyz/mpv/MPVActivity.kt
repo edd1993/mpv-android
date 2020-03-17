@@ -191,6 +191,11 @@ class MPVActivity : Activity(), MPVLib.EventObserver, TouchGesturesObserver {
             try {
                 ins = assetManager.open(filename, AssetManager.ACCESS_STREAMING)
                 val outFile = File("$configDir/$filename")
+                // Only extract youtube-dl executable if it doesn't exist
+                if (filename == "ytdl/youtube-dl" && outFile.length() > 0) {
+                    Log.w(TAG, "Skipping copy of asset file (exists): $filename")
+                    continue
+                }
                 // Note that .available() officially returns an *estimated* number of bytes available
                 // this is only true for generic streams, asset streams return the full file size
                 if (outFile.length() == ins.available().toLong()) {
